@@ -17,7 +17,7 @@ import java.util.List;
  * @see com.mongodb.client.model.Aggregates
  */
 @SpringBootTest
-public class UsingAggregationBuilders extends AbstractLesson {
+public class ZUsingAggregationBuilders extends AbstractLesson {
 
   /*
   In this lesson we are going to walk you through how to build complex

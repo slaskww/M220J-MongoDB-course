@@ -22,11 +22,11 @@ import java.util.List;
  *     href="https://docs.mongodb.com/manual/reference/operator/meta/natural/index.html">$natural</a>
  */
 @SpringBootTest
-public class CursorMethodsAndAggEquivalents extends AbstractLesson {
+public class ZCursorMethodsAndAggEquivalents extends AbstractLesson {
 
   private MongoCollection<Document> sortable;
 
-  public CursorMethodsAndAggEquivalents() {
+  public ZCursorMethodsAndAggEquivalents() {
     super();
     sortable = testDb.getCollection("sortable");
   }
@@ -48,7 +48,7 @@ public class CursorMethodsAndAggEquivalents extends AbstractLesson {
   public void setUp() {
     /*
      * Before we get started, looking into our cursor methods and aggregation
-     * stages, I'm going to create a 100 documents in dummy collection.
+     * stages, I'm going to create a 1000 documents in dummy collection.
      */
     List<Document> documents = new ArrayList<>();
     for (int i = 0; i < 1000; i++) {
@@ -258,10 +258,10 @@ public class CursorMethodsAndAggEquivalents extends AbstractLesson {
     // Using our movies dataset, we can run the following query:
     // db.movies.find({directors: "Sam Raimi"}).limit(2)
     Bson qFilter = Filters.eq("directors", "Sam Raimi");
-    Iterable limitCursor = moviesCollection.find(qFilter).limit(2);
+    FindIterable<Document> limitCursor = moviesCollection.find(qFilter).limit(2);
 
     List<Document> limitedFindList = new ArrayList<>();
-    ((FindIterable) limitCursor).into(limitedFindList);
+    limitCursor.into(limitedFindList);
     // the size of this list should be of 2
     Assert.assertEquals(2, limitedFindList.size());
 
