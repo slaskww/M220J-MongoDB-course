@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class UserTest extends TicketTest {
 
-  private UserDao dao;
+  private UserDao dao; //towrzymy obiekt UserDao przechowujacy kolekcje Userów i Sesji
 
   private static String email = "gryffindor@hogwarts.edu";
   private User testUser;
@@ -77,6 +77,9 @@ public class UserTest extends TicketTest {
   public void testLogin() {
     dao.addUser(testUser);
     boolean result = dao.createUserSession(testUser.getEmail(), jwt);
+
+    System.out.println("jaki rezultat: " + result);
+
     assertTrue("Should be able to create user sesssion.", result);
     Session session = dao.getUserSession(testUser.getEmail());
     assertEquals(
