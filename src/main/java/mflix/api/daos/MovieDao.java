@@ -31,11 +31,7 @@ public class MovieDao extends AbstractMFlixDao {  //DAO = Data access object)
     moviesCollection = db.getCollection(MOVIES_COLLECTION);
   }
 
-  @SuppressWarnings("unchecked")
-  private Bson buildLookupStage() {
-    return null;
 
-  }
 
   /**
    * movieId needs to be a hexadecimal string value. Otherwise it won't be possible to translate to
@@ -51,13 +47,31 @@ public class MovieDao extends AbstractMFlixDao {  //DAO = Data access object)
     return true;
   }
 
+  private Bson buildLookupStage(){
+    List<Variable<String>> let = new ArrayList<>();
+    let.add(new Variable<String>("id", "$_id"));
+
+    // lookup pipeline
+    Bson exprMatch = Document.parse("{'$expr': {'$eq': ['$movie_id', '$$id']}}");
+
+    Bson lookupMatch = Aggregates.match(exprMatch);
+    List<Bson> lookUpPipeline = new ArrayList<>();
+    // lookup sort stage
+    Bson sortLookup = Aggregates.sort(Sorts.descending("date"));
+
+    lookUpPipeline.add(lookupMatch);
+    lookUpPipeline.add(sortLookup);
+    return Aggregates.lookup("comments", let, lookUpPipeline, "comments");
+  }
+
   /**
    * Gets a movie object from the database.
    *
    * @param movieId - Movie identifier string.
    * @return Document object or null.
    */
-  @SuppressWarnings("UnnecessaryLocalVariable")
+ /* @SuppressWarnings("UnnecessaryLocalVariable")
+
   public Document getMovie(String movieId) {
     if (!validIdValue(movieId)) {
       return null;
@@ -66,11 +80,39 @@ public class MovieDao extends AbstractMFlixDao {  //DAO = Data access object)
     List<Bson> pipeline = new ArrayList<>();
     // match stage to find movie
     Bson match = Aggregates.match(Filters.eq("_id", new ObjectId(movieId)));
+    Bson lookup = Aggregates.lookup("comments", "_id", "movie_id", "comments" );
+    Bson sort = Aggregates.sort(Sorts.descending("comments.date"));
+    pipeline.add(sort);
     pipeline.add(match);
+    pipeline.add(lookup);
+
     // TODO> Ticket: Get Comments - implement the lookup stage that allows the comments to
     // retrieved with Movies.
     Document movie = moviesCollection.aggregate(pipeline).first();
+    return movie;
 
+  }
+*/
+  public Document getMovie(String movieId){
+
+    if (!validIdValue(movieId)) {
+      return null;
+    }
+
+    List<Bson> pipeline = new ArrayList<>();
+    // match stage to find movie
+    Bson match = Aggregates.match(Filters.eq("_id", new ObjectId(movieId)));
+    pipeline.add(match);
+
+    // comments lookup stage
+    Bson lookup = buildLookupStage();
+    if(lookup != null) {
+      pipeline.add(lookup);
+    }
+
+    Document movie = moviesCollection.aggregate(pipeline)
+            .batchSize(1)
+            .iterator().tryNext();
     return movie;
   }
 
