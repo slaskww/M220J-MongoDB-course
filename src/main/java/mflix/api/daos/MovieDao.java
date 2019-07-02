@@ -52,16 +52,17 @@ public class MovieDao extends AbstractMFlixDao {  //DAO = Data access object)
     let.add(new Variable<String>("id", "$_id"));
 
     // lookup pipeline
-    Bson exprMatch = Document.parse("{'$expr': {'$eq': ['$movie_id', '$$id']}}");
+    Bson exprMatch = Document.parse("{'$expr': {'$eq': ['$movie_id', '$$id']}}"); //Wykorzystujemy tutaj operator $expr, który buduje kwerendę porównującą pola z tego samego dokumentu, lub innego dokumentu w
+                                                                                  //etapie $match potoku agregacji.
 
     Bson lookupMatch = Aggregates.match(exprMatch);
-    List<Bson> lookUpPipeline = new ArrayList<>();
+    List<Bson> lookUpPipeline = new ArrayList<>(); //potok wykonany na kolekcji do złączenia
     // lookup sort stage
     Bson sortLookup = Aggregates.sort(Sorts.descending("date"));
 
     lookUpPipeline.add(lookupMatch);
     lookUpPipeline.add(sortLookup);
-    return Aggregates.lookup("comments", let, lookUpPipeline, "comments");
+    return Aggregates.lookup("comments", let, lookUpPipeline, "comments"); //parametry (poza let) dotyczą kolekcji dołączanej
   }
 
   /**
