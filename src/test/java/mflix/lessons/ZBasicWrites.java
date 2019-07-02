@@ -20,7 +20,7 @@ import java.util.List;
 
 /** @see com.mongodb.MongoWriteException */
 @SpringBootTest
-public class BasicWrites extends AbstractLesson {
+public class ZBasicWrites extends AbstractLesson {
 
   /**
    * In this lesson we are going to look into writing new data into a collection. Specifically, we

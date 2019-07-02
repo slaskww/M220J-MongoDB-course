@@ -1,6 +1,7 @@
 package mflix.lessons;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -22,14 +23,14 @@ import static com.mongodb.client.model.Updates.*;
  * opinion about them, so you periodically update the rating of your favorite musicians to match
  * their public rating.
  */
-public class UpdateOperators extends AbstractLesson {
+public class ZUpdateOperators extends AbstractLesson {
 
   private ObjectId band1Id;
   private ObjectId band2Id;
   private Document bandOne;
   private Document bandTwo;
 
-  public UpdateOperators() {
+  public ZUpdateOperators() {
     super();
   }
 
@@ -82,8 +83,8 @@ public class UpdateOperators extends AbstractLesson {
     MongoCollection<Document> artists = testDb.getCollection("artists");
 
     // retrieve the band in question
-    Bson queryFilter = new Document("_id", band1Id);
-    Document myBand = artists.find(queryFilter).iterator().tryNext();
+    Bson queryFilter = Filters.eq("_id", band1Id);
+    Document myBand = artists.find(queryFilter).first();
 
     // make sure that this is the band that I wanted, with all the fields
     // intact
@@ -99,7 +100,7 @@ public class UpdateOperators extends AbstractLesson {
 
     // replace the incorrectly titled document, with the correctly
     // titled document
-    artists.replaceOne(eq("_id", band1Id), replaceBand);
+    artists.replaceOne(queryFilter, replaceBand);
 
     // retrieve the doc after the replacement is complete
     Document myNewBand = artists.find(queryFilter).iterator().tryNext();
