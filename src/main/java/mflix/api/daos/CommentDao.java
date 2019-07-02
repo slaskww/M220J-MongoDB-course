@@ -4,6 +4,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 import mflix.api.models.Comment;
 import mflix.api.models.Critic;
 import org.bson.Document;
@@ -128,11 +129,28 @@ public class CommentDao extends AbstractMFlixDao {
      */
     public boolean deleteComment(String commentId, String email) {
         // TODO> Ticket Delete Comments - Implement the method that enables the deletion of a user
+
+        //tworzymy filter, który obejmuje obie wartości podane w parametrach
+        Bson filter = Filters.and(
+                Filters.eq("email", email),
+                Filters.eq("_id", new ObjectId(commentId))
+        );
+        // wywołujemy metodę delete
+        DeleteResult res = commentCollection.deleteOne(filter);
+
+        //w przypadku, gdy licznik usunięć jest inny niż 1, dokument albo nie istnieje, albo nie pasuje do filtru e-mail + _id.
+        if (res.getDeletedCount()!=1){
+            log.warn("Not able to delete comment `{}` for user `{}`. User" +
+                            " does not own comment or already deleted!",
+                    commentId, email);
+            return false;
+        }
+        return true;
+
         // comment
         // TIP: make sure to match only users that own the given commentId
         // TODO> Ticket Handling Errors - Implement a try catch block to
         // handle a potential write exception when given a wrong commentId.
-        return false;
     }
 
     /**
