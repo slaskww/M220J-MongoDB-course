@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
-public class BasicDeletes extends AbstractLesson {
+public class ZBasicDeletes extends AbstractLesson {
 
   /**
    * In this lesson we are going to check out how to perform deletes and remove documents that match

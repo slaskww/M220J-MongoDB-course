@@ -1,9 +1,13 @@
 package mflix.api.daos;
 
 import com.mongodb.MongoClientSettings;
+import com.mongodb.ReadConcern;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
 import mflix.api.models.Comment;
 import mflix.api.models.Critic;
@@ -162,12 +166,32 @@ public class CommentDao extends AbstractMFlixDao {
      */
     public List<Critic> mostActiveCommenters() {
         List<Critic> mostActive = new ArrayList<>();
+
+        MongoCollection<Critic> criticCollection = db.getCollection(COMMENT_COLLECTION, Critic.class).withCodecRegistry(this.pojoCodecRegistry).withReadConcern(ReadConcern.MAJORITY);
+
+
+        Bson group = Aggregates.group("$email", Accumulators.sum("count", 1L));
+        Bson sort = Aggregates.sort(Sorts.descending("count"));
+        Bson limit = Aggregates.limit(20);
+
+        List<Bson> pipeline = new ArrayList<>();
+        pipeline.add(group);
+        pipeline.add(sort);
+        pipeline.add(limit);
+
+        criticCollection.aggregate(pipeline).into(mostActive);
+
+
         // // TODO> Ticket: User Report - execute a command that returns the
         // // list of 20 users, group by number of comments. Don't forget,
         // // this report is expected to be produced with an high durability
         // // guarantee for the returned documents. Once a commenter is in the
         // // top 20 of users, they become a Critic, so mostActive is composed of
         // // Critic objects.
+
+
+
+
         return mostActive;
     }
 }
