@@ -8,8 +8,8 @@ public class Critic {
   @JsonProperty("_id")
   private String id;
 
-  @JsonProperty("count")
-  @BsonProperty("count")
+  @JsonProperty("cunt")
+  @BsonProperty("cunt")
   private int numComments;
 
   public Critic() {

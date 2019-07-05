@@ -170,8 +170,8 @@ public class CommentDao extends AbstractMFlixDao {
         MongoCollection<Critic> criticCollection = db.getCollection(COMMENT_COLLECTION, Critic.class).withCodecRegistry(this.pojoCodecRegistry).withReadConcern(ReadConcern.MAJORITY);
 
 
-        Bson group = Aggregates.group("$email", Accumulators.sum("count", 1L));
-        Bson sort = Aggregates.sort(Sorts.descending("count"));
+        Bson group = Aggregates.group("$email", Accumulators.sum("cunt", 1L));
+        Bson sort = Aggregates.sort(Sorts.descending("cunt"));
         Bson limit = Aggregates.limit(20);
 
         List<Bson> pipeline = new ArrayList<>();
@@ -188,9 +188,6 @@ public class CommentDao extends AbstractMFlixDao {
         // // guarantee for the returned documents. Once a commenter is in the
         // // top 20 of users, they become a Critic, so mostActive is composed of
         // // Critic objects.
-
-
-
 
         return mostActive;
     }
